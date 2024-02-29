@@ -1,4 +1,5 @@
 ECHO is on.
 .pytest_cache
+.idea
 
 #echo > .gitignore

@@ -1,38 +1,60 @@
+from typing import Any
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.core.serializers import serialize
-from . forms import Registration, Login
+from .forms import Registration, Login
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from.models import *
+from .models import Post
 from django.contrib.auth.decorators import login_required
 
 
+def get_post_data(request: HttpRequest) -> HttpResponse:
+    """Get serialized post data.
 
-def get_post_data(request):
-    post = Post.objects.all()
-    data = serialize('json', post)
+    Args:
+        request (HttpRequest): Django HTTP request object.
+
+    Returns:
+        HttpResponse: Serialized post data as JSON response.
+    """
+    posts = Post.objects.all()
+    data = serialize('json', posts)
     return HttpResponse(data)
 
 
-def user_registration(request):
+def user_registration(request: HttpRequest) -> Any:
+    """ Handles user registration.
+
+    Args:
+        request (HttpRequest): Django HTTP request object.
+
+    Returns:
+        Any: Rendered registration form or None.
+    """
     if request.method == 'POST':
         form = Registration(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
-            mail = form.cleaned_data['email']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = User.objects.create_user(username=username, email=mail, password=password)
-            print('user created succesfully')
+            user = User.objects.create_user(username=username, email=email, password=password)
+            print('User created successfully')
             return render(request, 'registration.html', {'form': form})
-
-
     else:
         form = Registration()
-        return render(request, 'registration.html', {'form': form})
+    return render(request, 'registration.html', {'form': form})
 
 
-def login_user(request):
+def login_user(request: HttpRequest) -> Any:
+    """handles user login.
+
+    Args:
+        request (HttpRequest): Django HTTP request object.
+
+    Returns:
+        Any: Renders login form.
+    """
     form = Login(request.POST)
     if request.method == "POST":
         if form.is_valid():
@@ -40,32 +62,35 @@ def login_user(request):
             password = form.cleaned_data['password']
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                Login(request, user)
-                print('hello {user} welcome you logged in succesfully')
+                login(request, user)
+                print(f'Hello {user}, welcome. You have logged in successfully.')
                 return None
             else:
                 form = Registration()
-                return render(request, 'registration.html', {'form': form})
     else:
         form = Login()
-        return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 
-def user_logout(request):
+def user_logout(request: HttpRequest) -> None:
+    """Handles user logout.
+
+    Args:
+        request (HttpRequest): Django HTTP request object.
+    """
     logout(request)
 
+
 @login_required()
-def get_posts(request):
-    post_data = Post.objects.all()
-    json_data = serialize('json', post_data)
-    return HttpResponse(json_data)
+def get_posts(request: HttpRequest) -> HttpResponse:
+    """Get serialized post data for logged-in users.
 
+    Args:
+        request (HttpRequest): Django HTTP request object.
 
-
-
-
-
-
-
-
-
+    Returns:
+        HttpResponse: Serialized post data as JSON response.
+    """
+    posts = Post.objects.all()
+    data = serialize('json', posts)
+    return HttpResponse(data)

@@ -1,39 +1,38 @@
+from typing import Any
 from django.db import models
 
 
-# from django.contrib.auth.models import User
-
-
 class User(models.Model):
-    username = models.CharField(max_length=10)
-    email = models.EmailField()
-    password = models.CharField(max_length=10)
+    """User model for storing user information."""
+    username: str = models.CharField(max_length=10)
+    email: str = models.EmailField()
+    password: str = models.CharField(max_length=10)
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """String representation of the User model."""
         return self.username
 
 
-'''Post: Fields for title, content, author, category, created_date.
-● Comment: Fields for post, author, content, created_date.
-'''
-
-
 class Post(models.Model):
-    title = models.CharField(max_length=25, name="TITLE")
-    content_post = models.TextField(name='CONTENT')
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.CharField(max_length=10, name='CATEGORY')
-    created_date = models.DateTimeField(auto_now_add=True)
+    """Post model for storing blog post information."""
+    title: str = models.CharField(max_length=25)
+    content_post: str = models.TextField()
+    author: User = models.ForeignKey(User, on_delete=models.CASCADE)
+    category: str = models.CharField(max_length=10)
+    created_date: Any = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return self.TITLE
+    def __str__(self) -> str:
+        """String representation of the Post model."""
+        return self.title
 
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, name="AUTHOR")
-    content = models.TextField(name='CONTENT')
-    created_date = models.DateTimeField(auto_now=True)
+    """Comment model for storing comments on blog posts."""
+    post: Post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    author: User = models.ForeignKey(User, on_delete=models.CASCADE)
+    content: str = models.TextField()
+    created_date: Any = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return f"{self.AUTHOR} commented {self.CONTENT}"
+    def __str__(self) -> str:
+        """String representation of the Comment model."""
+        return f"{self.author} commented: {self.content}"

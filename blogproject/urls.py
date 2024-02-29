@@ -19,13 +19,11 @@ from django.urls import path
 from blog import views
 
 
-urlpatterns = [
-    path('admin/', admin.site.urls),
-path('post/', views.get_post_data),
-path('register/', views.user_registration),
-path('login/', views.login_user),
-path('postdata/', views.get_posts),
-path('logout/', views.user_logout),
-
-
+urlpatterns: list = [
+    path('admin/', admin.site.urls),  # Admin URL
+    path('post/', views.get_post_data),  # Endpoint for getting post data
+    path('register/', views.user_registration),  # Endpoint for user registration
+    path('login/', views.login_user),  # Endpoint for user login
+    path('postdata/', views.get_posts),  # Endpoint for getting posts (for logged-in users)
+    path('logout/', views.user_logout),  # Endpoint for user logout
 ]
